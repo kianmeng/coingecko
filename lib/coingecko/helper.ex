@@ -16,4 +16,13 @@ defmodule Coingecko.Helper do
     end)
     |> Enum.into(%{})
   end
+
+  @spec names_to_symbols() :: map | none
+  def names_to_symbols() do
+    {:ok, coins} = Coingecko.get_coin_list()
+    Enum.map(coins, fn(coin)->
+      {coin["name"], coin["symbol"]}
+    end)
+    |> Enum.into(%{})
+  end
 end
