@@ -1,21 +1,25 @@
 defmodule Coingecko do
-  @moduledoc """
-  Documentation for `Coingecko`.
-  https://www.coingecko.com/en/api#explore-api
+  @moduledoc "README.md"
+             |> File.read!()
+             |> String.split("<!-- MDOC !-->")
+             |> Enum.fetch!(1)
 
-  """
+  @base_url "https://api.coingecko.com/api/v3/"
 
   @doc """
-  Hello world.
+  Returns the current price of any cryptocurrencies in any other supported
+  currencies.
 
   ## Examples
 
-      iex> Coingecko.hello()
-      :world
+      iex> Coingecko.get_simple_price(["binancecoin", "basecoin"], ["btc", "eth"])
+      {:ok,
+       %{
+         "basecoin" => %{"btc" => 1.0e-8, "eth" => 3.016e-7},
+         "binancecoin" => %{"btc" => 0.00267301, "eth" => 0.08249109}
+       }}
 
   """
-
-  @base_url "https://api.coingecko.com/api/v3/"
   @spec get_simple_price([String.t()], [String.t()], map, boolean) :: {:ok, [map]} | {:error, any}
   def get_simple_price(ids, vs_currencies, options \\ %{}, force_refresh \\ false) do
     params =
@@ -27,14 +31,60 @@ defmodule Coingecko do
     request(:get, url, "", force_refresh)
   end
 
+  @doc """
+  Returns a list of supported bitcoins.
+
+  ## Examples
+
+      iex> Coingecko.get_coin_list()
+      {:ok,
+       [
+         %{"id" => "01coin", "name" => "01coin", "symbol" => "zoc"},
+         %{
+           "id" => "0-5x-long-algorand-token",
+           "name" => "0.5X Long Algorand Token",
+           "symbol" => "algohalf"
+         },
+         ...
+       ]}
+
+  """
   @spec get_coin_list(boolean) :: {:ok, [map]} | {:error, any}
   def get_coin_list(force_refresh \\ false) do
     url = "/coins/list"
     request(:get, url, "", force_refresh)
   end
 
-  def get_chached_keys, do: Cachex.keys(:coingecko_cache)
+  @doc """
+  Returns a list of cached keys of HTTP requests.
 
+  ## Examples
+
+      iex> Coingecko.get_cached_keys()
+      {:ok,
+       ["get_simple/price?ids=binancecoin%2Cbasecoin&vs_currencies=btc%2Ceth_",
+        "get_/simple/supported_vs_currencies_", "get_/coins/list_"]}
+
+  """
+
+  @spec get_cached_keys() :: {:ok, [String.t()]}
+  def get_cached_keys, do: Cachex.keys(:coingecko_cache)
+
+  @doc """
+  Returns a list of supported vs currencies.
+
+  ## Examples
+
+      iex> Coingecko.get_simple_supported_vs_currencies
+      {:ok,
+       ["btc", "eth", "ltc", "bch", "bnb", "eos", "xrp", "xlm", "link", "dot", "yfi",
+        "usd", "aed", "ars", "aud", "bdt", "bhd", "bmd", "brl", "cad", "chf", "clp",
+        "cny", "czk", "dkk", "eur", "gbp", "hkd", "huf", "idr", "ils", "inr", "jpy",
+        "krw", "kwd", "lkr", "mmk", "mxn", "myr", "ngn", "nok", "nzd", "php", "pkr",
+        "pln", "rub", "sar", "sek", "sgd", "thb", "try", "twd", "uah", "vef", "vnd",
+        "zar", "xdr", "xag", "xau"]}
+
+  """
   @spec get_simple_supported_vs_currencies(boolean) :: {:ok, [String.t()]} | {:error, any}
   def get_simple_supported_vs_currencies(force_refresh \\ false) do
     url = "/simple/supported_vs_currencies"

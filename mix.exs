@@ -1,6 +1,8 @@
 defmodule Coingecko.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/steffenix/coingecko"
+
   def project do
     [
       app: :coingecko,
@@ -9,11 +11,11 @@ defmodule Coingecko.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
-      package: package()
+      package: package(),
+      docs: docs()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger],
@@ -21,7 +23,6 @@ defmodule Coingecko.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:cachex, "~> 3.3"},
@@ -32,17 +33,21 @@ defmodule Coingecko.MixProject do
   end
 
   defp description() do
-    "Coingeko API wrapper to fetch crypto currencies prices."
+    "Elixir API wrapper for CoinGecko to fetch crypto currencies prices."
   end
 
   defp package() do
     [
-      # This option is only needed when you don't want to use the OTP application name
-      name: "coingecko",
-      # These are the default files included in the package
       files: ~w(lib .formatter.exs mix.exs README*),
       licenses: ["Apache-2.0"],
-      links: %{"GitHub" => "https://github.com/steffenix/coingecko"}
+      links: %{"GitHub" => @source_url}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "Coingecko",
+      source_url: @source_url
     ]
   end
 end
