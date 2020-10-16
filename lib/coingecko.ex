@@ -60,6 +60,7 @@ defmodule Coingecko do
         resp -> {:ignore, resp}
       end
     end)
+    |> convert_results
   end
 
   defp get_and_cache(method, url, body) do
@@ -70,12 +71,16 @@ defmodule Coingecko do
     |> case do
       {:ok, resp} ->
         Cachex.put(:coingecko_cache, key, resp)
-        resp
+        {:ok, resp}
 
       resp ->
         resp
     end
   end
+
+  defp convert_results({:ignore, resp}), do: resp
+  defp convert_results({:commit, resp}), do: {:ok, resp}
+  defp convert_results(resp), do: resp
 
   defp get_key(method, url, body) do
     "#{method}_#{url}_#{body}"
