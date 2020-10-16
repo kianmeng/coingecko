@@ -33,6 +33,8 @@ defmodule Coingecko do
     request(:get, url, "", force_refresh)
   end
 
+  def get_chached_keys, do: Cachex.keys(:coingecko_cache)
+
   @spec get_simple_supported_vs_currencies(boolean) :: {:ok, [String.t()]} | {:error, any}
   def get_simple_supported_vs_currencies(force_refresh \\ false) do
     url = "/simple/supported_vs_currencies"
